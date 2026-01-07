@@ -44,54 +44,17 @@ header{
 <script>
 const SPACE_ID = "wh2jduuotak5";
 const ACCESS_TOKEN = "LgprZeoLtz64wCTTjVdFx1RrWA5C11ZtEk4UdrNW7g";
-
 fetch(
-  `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/master/entries?content_type=blog&include=2&access_token=${ACCESS_TOKEN}`
+  `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/master/entries?access_token=${ACCESS_TOKEN}`
 )
 .then(res => res.json())
 .then(data => {
-  const posts = document.getElementById("posts");
-  posts.innerHTML = "";
-
-  const assets = {};
-  if (data.includes?.Asset) {
-    data.includes.Asset.forEach(a => {
-      assets[a.sys.id] = "https:" + a.fields.file.url;
-    });
-  }
-
-  data.items.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "post";
-
-    div.innerHTML += `<h2>${item.fields.title}</h2>`;
-
-    if(item.fields.description){
-      div.innerHTML += `
-  <h2>
-    <a href="post.html?slug=${item.fields.slug}">
-      ${item.fields.title}
-    </a>
-  </h2>
-`;
-    }
-
-    if(item.fields.video){
-      const vid = assets[item.fields.video.sys.id];
-      if(vid){
-        div.innerHTML += `
-          <video controls>
-            <source src="${vid}" type="video/mp4">
-          </video>`;
-      }
-    }
-
-    posts.appendChild(div);
-  });
+  console.log(data);
+  document.getElementById("posts").innerText = "Check console for data";
 })
-.catch(err=>{
-  document.getElementById("posts").innerHTML = "Failed to load blog.";
+.catch(err => {
   console.error(err);
+  document.getElementById("posts").innerText = "Fetch failed";
 });
 </script>
 
