@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>MEDTECH Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0b1020;
+  color:white;
+}
+header{
+  background:#111833;
+  padding:20px;
+  text-align:center;
+}
+.post{
+  background:#151b3d;
+  padding:15px;
+  margin:20px auto;
+  max-width:900px;
+  border-radius:12px;
+}
+.post h2{ color:#00eaff; }
+.post video, .post img{
+  width:100%;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>📘 MEDTECH Blog</h1>
+  <a href="index.html" style="color:#00ff99;">← Back Home</a>
+</header>
+
+<div id="posts">Loading posts...</div>
+
+<script>
+const SPACE_ID = "wh2jduuotak5";
+const ACCESS_TOKEN = "LgprZeoLtz64wCTTjVdFx1RrWA5C11ZtEk4UdrNW7g";
+
+fetch(
+  `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/master/entries?content_type=blog&include=2&access_token=${ACCESS_TOKEN}`
+)
+.then(res => res.json())
+.then(data => {
+  const posts = document.getElementById("posts");
+  posts.innerHTML = "";
+
+  const assets = {};
+  if (data.includes?.Asset) {
+    data.includes.Asset.forEach(a => {
+      assets[a.sys.id] = "https:" + a.fields.file.url;
+    });
+  }
+
+  data.items.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "post";
+
+    div.innerHTML += `<h2>${item.fields.title}</h2>`;
+
+    if(item.fields.description){
+      div.innerHTML += `
+  <h2>
+    <a href="post.html?slug=${item.fields.slug}">
+      ${item.fields.title}
+    </a>
+  </h2>
+`;
+    }
+
+    if(item.fields.video){
+      const vid = assets[item.fields.video.sys.id];
+      if(vid){
+        div.innerHTML += `
+          <video controls>
+            <source src="${vid}" type="video/mp4">
+          </video>`;
+      }
+    }
+
+    posts.appendChild(div);
+  });
+})
+.catch(err=>{
+  document.getElementById("posts").innerHTML = "Failed to load blog.";
+  console.error(err);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MEDTECH Blog Post</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  background:#0b1020;
+  color:white;
+  font-family:Arial, sans-serif;
+  padding:20px;
+}
+a{ color:#00ff99; text-decoration:none; }
+h1{ color:#00eaff; }
+img{
+  max-width:100%;
+  border-radius:10px;
+  margin:10px 0;
+}
+</style>
+</head>
+
+<body>
+
+<a href="blog.html">← Back to Blog</a>
+<h1 id="title">Loading...</h1>
+<div id="content"></div>
+
+<script>
+const slug = new URLSearchParams(window.location.search).get("slug");
+
+const SPACE_ID = "wh2jduuotak5";
+const ACCESS_TOKEN = "LgprZeoLtz64wCTTjVdFx1RrWA5C11ZtEk4UdrNW7g";
+
+fetch(
+  `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/master/entries?content_type=blog&fields.slug=${slug}&include=2&access_token=${ACCESS_TOKEN}`
+)
+.then(res => res.json())
+.then(data => {
+  if (!data.items.length) {
+    document.getElementById("content").innerHTML = "Post not found";
+    return;
+  }
+
+  const post = data.items[0].fields;
+
+  document.getElementById("title").innerText = post.title;
+
+  // Rich text rendering (simple)
+  const body = post.content?.content || [];
+  let html = "";
+
+  body.forEach(block => {
+    if (block.nodeType === "paragraph") {
+      html += "<p>" + block.content.map(t => t.value || "").join("") + "</p>";
+    }
+  });
+
+  document.getElementById("content").innerHTML = html;
+})
+.catch(err => {
+  console.error(err);
+  document.getElementById("content").innerHTML = "Error loading post";
+});
+</script>
+
+</body>
+</html>
